@@ -28,9 +28,9 @@ production LLM systems actually use to balance cost, latency, and quality.
 ## Screenshots
 
 <p align="center">
-  <img src="output/multi-model-chat1.png" width="32%" />
-  <img src="output/multi-model-chat 2.png" width="32%" />
-  <img src="output/multi-model-chat 3.png" width="32%" />
+  <img src="multi-model-chat1.png" width="32%" />
+  <img src="multi-model-chat 2.png" width="32%" />
+  <img src="multi-model-chat 3.png" width="32%" />
 </p>
 
 ---
