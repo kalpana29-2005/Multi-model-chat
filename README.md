@@ -1,136 +1,108 @@
-# 🤖 Multi Model Chat – AI Chat System
+#  Relay — Multi-Model AI Chat
 
-Multi Model Chat is a powerful AI chatbot that intelligently routes user queries to different AI models based on the task type. It is designed to be fast, modular, and easily extendable for real-world applications.
+**[-> Live demo: multi-model-chat-2wr1.onrender.com](https://multi-model-chat-2wr1.onrender.com)**
+*(Free-tier hosting — first load after inactivity can take ~30–50s to wake up. Enter any name to sign in, no signup required.)*
 
----
-
-## 🚀 Features
-
- **Multi-Model Routing** – Automatically selects the best model for each query
- **ChatGPT-like UI** – Clean and responsive Flask-based interface
- **Fast Responses** – Optimized routing logic
- **Smart Classification** – Detects query type (coding, general, reasoning, etc.)
- **Plug & Play Models** – Easily integrate APIs or local models
- **Web Interface** – Runs in browser
+One chat window, three models — Relay reads each message and routes it to the
+model best suited for the job, instead of sending everything to a single
+general-purpose model.
 
 ---
 
-## 🏗️ Project Structure
+## Why this exists
+
+Most simple chatbot demos wrap a single LLM. Relay routes each query to a
+different backend model based on *what kind of task it is*, with an automatic
+fallback if a provider is down — a small-scale version of the routing logic
+production LLM systems actually use to balance cost, latency, and quality.
+
+| Query type | Routed to | Why |
+|---|---|---|
+| Reasoning (math, proofs, "step by step") | `deepseek-r1` via GitHub Models | Stronger step-by-step reasoning |
+| Quick asks ("tl;dr", "summary", "brief") | `gpt-4o-mini` via GitHub Models | Fast, cheap, good enough |
+| Everything else | `llama-3.3-70b-versatile` via Groq | Best general-purpose quality available |
+| Any failure above | `llama-3.1-8b-instant` via Groq | Always-on fallback so the chat never just breaks |
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="output/multi-model-chat1.png" width="32%" />
+  <img src="output/multi-model-chat 2.png" width="32%" />
+  <img src="output/multi-model-chat 3.png" width="32%" />
+</p>
+
+---
+
+## Tech stack
+
+- **Backend:** Python, Flask, Gunicorn
+- **Model providers:** GitHub Models inference API, Groq API (via the `openai` SDK's chat-completions interface)
+- **Frontend:** HTML, CSS, vanilla JS (no framework)
+- **Deployment:** Render (Procfile-based)
+
+---
+
+## Project structure
 
 ```
-Multi-Model-Chat/
-│── app.py              # Main Flask app
-│── model_router.py     # Routes queries
-│── templates/
-│   └── index.html
-|
-│── static/
-│   └── style.css
-│── requirements.txt
-│── README.md
-
-## ⚙️ Installation
-
-### 1️⃣ Clone the repository
-
-```bash
-git clone https://github.com/kalpana29-2005/multi-model-chat.git
-cd multi-model-chat
+Multi-model-chat/
+├── app.py              # Flask app: routes, session-based sign-in, chat API
+├── model_router.py      # Keyword-based routing + provider fallback logic
+├── templates/
+│   ├── index.html       # Chat UI
+│   └── login.html        # Sign-in screen
+├── static/
+│   ├── style.css
+│   └── script.js
+├── requirements.txt
+├── Procfile              # gunicorn start command for deployment
+└── .env.example         # Template for required environment variables
 ```
 
-### 2️⃣ Create virtual environment (optional)
+---
+
+## Running it locally
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-### 3️⃣ Install dependencies
-
-```bash
+git clone https://github.com/kalpana29-2005/Multi-model-chat.git
+cd Multi-model-chat
+python -m venv venv && venv\Scripts\activate      # optional
 pip install -r requirements.txt
-```
-
-### 4️⃣ Set up your environment variables
-
-```bash
-cp .env.example .env
-```
-
-Then edit `.env` and fill in your real `GITHUB_API_KEY`, `GROQ_API_KEY`, and a
-random `FLASK_SECRET_KEY`. **Never commit your real `.env` file** — it's
-already excluded via `.gitignore`.
-
----
-
-## ▶️ Run the App (local development)
-
-```bash
+cp .env.example .env      # then fill in your own API keys
 python app.py
 ```
 
-Open in browser:
+Open `http://127.0.0.1:5000`.
 
-```
-http://127.0.0.1:5000
-```
-
----
-
-## ☁️ Deploying
-
-The app ships with a `Procfile` and `gunicorn`, so it works out of the box on
-Render, Railway, or Heroku-style platforms:
-
-1. Push this repo to GitHub.
-2. Create a new web service on your platform of choice, pointing at the repo.
-3. Set the environment variables from `.env.example` (`GITHUB_API_KEY`,
-   `GROQ_API_KEY`, `FLASK_SECRET_KEY`, `FLASK_ENV=production`) in the
-   platform's dashboard — do not put real keys in any file you commit.
-4. The platform will run the `Procfile`'s start command:
-   `gunicorn app:app --bind 0.0.0.0:$PORT`.
-
-> ⚠️ **Security note:** conversation history is stored in memory
-> (`conversations` dict in `app.py`), so it resets on every restart/deploy and
-> won't scale across multiple server instances. Fine for a demo; swap in a
-> real database (SQLite/Postgres) if you need persistence.
+You'll need your own free API keys to run it:
+- GitHub Models token → https://github.com/settings/tokens
+- Groq API key → https://console.groq.com/keys
 
 ---
 
-## 🧠 How It Works
+## Notes on the current implementation
 
-1. User enters a query
-2. `model_router.py` analyzes it
-3. Routes to:
+This is a demo-scale project, and a couple of design choices are intentional
+simplifications rather than oversights:
 
-   * Coding → Code Model
-   * General → GPT Model
-   * Logic → Specialized Model
-4. Response is shown in UI
+- **Sign-in is name-only, no password.** There's no real user account system —
+  session is just a name. Good enough for a public demo, not meant to be
+  production auth.
+- **Chat history is stored in memory**, not a database, so it resets on every
+  server restart/redeploy and won't scale across multiple instances. Swapping
+  in SQLite/Postgres is the natural next step.
 
----
+## Planned improvements
 
-
-## Future Improvements
-
-*  Authentication system
-*  Chat history database
-*  Add more models (Claude, Gemini, etc.)
-*  Voice support
-*  Cloud deployment
+- [ ] Persistent chat history (SQLite/Postgres)
+- [ ] Real authentication
+- [ ] Add more model providers (Claude, Gemini)
+- [ ] Voice input/output
 
 ---
 
-##  Tech Stack
-
-* Python
-* Flask
-* HTML, CSS
-* AI APIs
-
-
-## 📄 License
+## License
 
 MIT License
-
----
