@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relay · Multi-Model Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Left rail: the "routing board" — signature element -->
+    <aside class="rail">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <span class="node node-a"></span>
+          <span class="node node-b"></span>
+          <span class="node node-c"></span>
+        </span>
+        <span class="brand-name">Relay</span>
+      </div>
+
+      <div class="rail-section-label">Routing board</div>
+      <ul class="route-board" id="route-board">
+        <li class="route-node" data-route="reasoning">
+          <i class="dot dot-reasoning"></i>
+          <div>
+            <div class="route-name">Reasoning</div>
+            <div class="route-model">deepseek-r1</div>
+          </div>
+        </li>
+        <li class="route-node" data-route="quick">
+          <i class="dot dot-quick"></i>
+          <div>
+            <div class="route-name">Quick</div>
+            <div class="route-model">gpt-4o-mini</div>
+          </div>
+        </li>
+        <li class="route-node" data-route="default">
+          <i class="dot dot-default"></i>
+          <div>
+            <div class="route-name">Default</div>
+            <div class="route-model">llama-3.3-70b</div>
+          </div>
+        </li>
+        <li class="route-node" data-route="fallback">
+          <i class="dot dot-fallback"></i>
+          <div>
+            <div class="route-name">Fallback</div>
+            <div class="route-model">llama-3.1-8b</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="rail-section-label">Triggers</div>
+      <ul class="trigger-list">
+        <li><span class="dot dot-reasoning"></span>"solve", "step by step", "logic"</li>
+        <li><span class="dot dot-quick"></span>"quick", "summary", "short"</li>
+        <li><span class="dot dot-default"></span>everything else</li>
+      </ul>
+
+      <div class="rail-footer">
+        <div class="user-chip">
+          <span class="user-avatar">{{ username[0]|upper }}</span>
+          <span class="user-name">{{ username }}</span>
+        </div>
+        <div class="rail-actions">
+          <button id="clear-btn" class="btn-ghost" title="Clear conversation">Clear</button>
+          <a href="{{ url_for('logout') }}" class="btn-ghost">Sign out</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main chat column -->
+    <main class="chat-column">
+      <header class="chat-header">
+        <div>
+          <h1>Relay</h1>
+          <p class="chat-subtitle">Multi-model chat · routed automatically by intent</p>
+        </div>
+        <div class="header-signal" id="header-signal" aria-hidden="true">
+          <span class="pulse-dot"></span>
+          <span id="header-signal-label">Idle</span>
+        </div>
+      </header>
+
+      <section class="chat-window" id="chat-window">
+        <div class="empty-state" id="empty-state">
+          <p>Ask anything. Relay will route it to the model best suited for it —
+          and show you exactly which one answered.</p>
+        </div>
+      </section>
+
+      <form class="composer" id="composer" autocomplete="off">
+        <textarea
+          id="message-input"
+          rows="1"
+          placeholder="Message Relay…"
+          required
+        ></textarea>
+        <button type="submit" id="send-btn" class="btn-primary" aria-label="Send message">
+          Send
+        </button>
+      </form>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

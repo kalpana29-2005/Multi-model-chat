@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in · Relay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="login-body">
+  <div class="login-card">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <span class="node node-a"></span>
+        <span class="node node-b"></span>
+        <span class="node node-c"></span>
+      </span>
+      <span class="brand-name">Relay</span>
+    </div>
+    <p class="brand-tagline">One chat window. Three models routed by intent.</p>
+
+    <form method="POST" action="{{ url_for('login') }}" class="login-form">
+      <label for="username">What should we call you?</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="e.g. Kalpana"
+        autocomplete="name"
+        autofocus
+        required
+      />
+      {% if error %}
+        <p class="form-error">{{ error }}</p>
+      {% endif %}
+      <button type="submit" class="btn-primary">Enter Relay</button>
+    </form>
+
+    <div class="login-legend">
+      <span class="legend-item"><i class="dot dot-reasoning"></i>Reasoning</span>
+      <span class="legend-item"><i class="dot dot-quick"></i>Quick</span>
+      <span class="legend-item"><i class="dot dot-default"></i>Default</span>
+    </div>
+  </div>
+</body>
+</html>
